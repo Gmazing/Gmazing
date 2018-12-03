@@ -16,7 +16,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="c:/Users/Hasee/AppData/Roaming/Typora/typora-user-images/1543845403810.png">
 <meta property="og:image" content="c:/Users/Hasee/AppData/Roaming/Typora/typora-user-images/1543845745500.png">
-<meta property="og:updated_time" content="2018-12-03T14:10:24.778Z">
+<meta property="og:updated_time" content="2018-12-03T14:11:37.284Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="湖湘杯线下AWD记录">
 <meta name="twitter:description" content="恕我直言，西安胡门说好的每人一套环境，到后面变成公共靶场。辣鸡">
@@ -91,8 +91,7 @@
       
         <p>恕我直言，西安胡门说好的每人一套环境，到后面变成公共靶场。辣鸡</p>
 <a id="more"></a>
-<p><strong>Day 1</strong> AWD</p>
-<p>  每个队伍维护两台机器，一台web，一台PWN，刚刚开始把账号密码改了就丢在一边了。先用自己写的SSH爆破脚本跑了一遍ssh默认密码，搞到了几个没有改默认密码的，刷了一波分，丢给队友玩。</p>
+<h2 id="Day-1-AWD"><a href="#Day-1-AWD" class="headerlink" title="Day 1 AWD"></a><strong>Day 1</strong> AWD</h2><p>  每个队伍维护两台机器，一台web，一台PWN，刚刚开始把账号密码改了就丢在一边了。先用自己写的SSH爆破脚本跑了一遍ssh默认密码，搞到了几个没有改默认密码的，刷了一波分，丢给队友玩。</p>
 <p>然后D盾扫一波看看有没有预留的后门</p>
 <p><img src="C:\Users\Hasee\AppData\Roaming\Typora\typora-user-images\1543845403810.png" alt="1543845403810"></p>
 <p>发现一个 .shell.php菜刀马，密码c ，但是是root权限创建，并且有定时任务一直写入，无法删除，可以选择写一个 while循环删除他。</p>
@@ -105,8 +104,7 @@
 <p>根据这个后门在最后一个小时里面，狂刷分到结束从第四刷到第二。</p>
 <p>后面爆破了一下mysql，发现很多队伍都没有修改mysql的密码。</p>
 <p>第一场 AWD 结束。</p>
-<p><strong>Day 1</strong> netkoth(擂主赛)</p>
-
+<h2 id="Day-1-netkoth-擂主赛"><a href="#Day-1-netkoth-擂主赛" class="headerlink" title="Day 1 netkoth(擂主赛)"></a><strong>Day 1</strong> netkoth(擂主赛)</h2>
       
     </div>
     <footer class="article-footer">
