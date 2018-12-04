@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://qqzuser.gitee.io/2018/12/03/hxb2018/eval.png">
 <meta property="og:image" content="https://qqzuser.gitee.io/2018/12/03/hxb2018/ym.png">
 <meta property="og:image" content="https://qqzuser.gitee.io/2018/12/03/hxb2018/upload.png">
-<meta property="og:updated_time" content="2018-12-04T05:30:24.309Z">
+<meta property="og:updated_time" content="2018-12-04T05:47:13.445Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="湖湘杯线下AWD记录">
 <meta name="twitter:description" content="很不错(la ji)的靶场。">
@@ -93,7 +93,7 @@
       
         <p>很不错(la ji)的靶场。</p>
 <a id="more"></a>
-<h2 id="Day-1-AWD"><a href="#Day-1-AWD" class="headerlink" title="Day 1 AWD"></a><strong>Day 1</strong> AWD</h2><p>  每个队伍维护两台机器，一台web，一台PWN，刚刚开始把账号密码改了就丢在一边了。先用自己写的SSH爆破脚本跑了一遍ssh默认密码，搞到了几个没有改默认密码的，刷了一波分，丢给队友玩。</p>
+<h2 id="Day-1-AWD-上午场"><a href="#Day-1-AWD-上午场" class="headerlink" title="Day 1 AWD 上午场"></a><strong>Day 1</strong> AWD 上午场</h2><p>  每个队伍维护两台机器，一台web，一台PWN，刚刚开始把账号密码改了就丢在一边了。先用自己写的SSH爆破脚本跑了一遍ssh默认密码，搞到了几个没有改默认密码的，刷了一波分，丢给队友玩。</p>
 <p>然后D盾扫一波看看有没有预留的后门</p>
 <p><img src="/2018/12/03/hxb2018/dd.png" alt="1543845403810"></p>
 <p>发现一个 .shell.php菜刀马，密码c ，但是是root权限创建，并且有定时任务一直写入，无法删除，可以选择写一个 while循环删除他。</p>
@@ -106,7 +106,7 @@
 <p>根据这个后门在最后一个小时里面，狂刷分到结束从第十一刷到第二。</p>
 <p>后面爆破了一下mysql，发现很多队伍都没有修改mysql的密码。</p>
 <p>第一场 AWD 结束。</p>
-<h2 id="Day-1-netkoth-擂主赛"><a href="#Day-1-netkoth-擂主赛" class="headerlink" title="Day 1 netkoth(擂主赛)"></a><strong>Day 1</strong> netkoth(擂主赛)</h2><p>  还是头一次参加这种比赛，赛制为 在Web目录下的HIll/SCORE_POINTS的文件中写入你队伍的token，服务器每半个小时重置一次，每5分钟check一次，check时写入的成功队伍则得分。</p>
+<h2 id="Day-1-netkoth-擂主赛-下午场"><a href="#Day-1-netkoth-擂主赛-下午场" class="headerlink" title="Day 1 netkoth(擂主赛) 下午场"></a><strong>Day 1</strong> netkoth(擂主赛) 下午场</h2><p>  还是头一次参加这种比赛，赛制为 在Web目录下的HIll/SCORE_POINTS的文件中写入你队伍的token，服务器每半个小时重置一次，每5分钟check一次，check时写入的成功队伍则得分。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">web1.humensec.com</span><br><span class="line">web2.humensec.com</span><br><span class="line">web3.humensec.com</span><br><span class="line">web4.humensec.com</span><br><span class="line">web5.humensec.com</span><br><span class="line">pwn1.humensec.com</span><br><span class="line">pwn2.humensec.com</span><br><span class="line">pwn3.humensec.com</span><br></pre></td></tr></table></figure>
 <p>刚刚开始一个个去测试漏洞，但是前面两个小时我们队伍题目都很难打开，只能扫选手的80端口玩玩，见到了搭建了乌云知识库的、搭建ctf笔记的、各种DVWA的。。。</p>
 <p>“””                                     省略一个小时                            “””</p>
